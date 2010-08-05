@@ -5,12 +5,12 @@ module OAuthProvider
         include ::DataMapper::Resource
 
         property :id, Serial
-        property :consumer_id, Integer, :nullable => false
-        property :request_shared_key, String, :nullable => false
-        property :shared_key, String, :unique => true, :nullable => false
-        property :secret_key, String, :unique => true, :nullable => false
+        property :consumer_id, Integer, :required => true
+        property :request_shared_key, String, :required => true
+        property :shared_key, String, :unique => true, :required => true
+        property :secret_key, String, :unique => true, :required => true
 
-        belongs_to :consumer , :class_name => '::OAuthProvider::Backends::DataMapper::Consumer'
+        belongs_to :consumer , :model => '::OAuthProvider::Backends::DataMapper::Consumer'
 
         def token
           OAuthProvider::Token.new(shared_key, secret_key)

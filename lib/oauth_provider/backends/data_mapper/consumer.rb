@@ -5,12 +5,12 @@ module OAuthProvider
         include ::DataMapper::Resource
 
         property :id, Serial
-        property :callback, String, :unique => true, :nullable => false
-        property :shared_key, String, :unique => true, :nullable => false
-        property :secret_key, String, :unique => true, :nullable => false
+        property :callback, String, :unique => true, :required => true
+        property :shared_key, String, :unique => true, :required => true
+        property :secret_key, String, :unique => true, :required => true
 
-        has n, :user_requests, :class_name => '::OAuthProvider::Backends::DataMapper::UserRequest'
-        has n, :user_accesses, :class_name => '::OAuthProvider::Backends::DataMapper::UserAccess'
+        has n, :user_requests, :model => '::OAuthProvider::Backends::DataMapper::UserRequest'
+        has n, :user_accesses, :model => '::OAuthProvider::Backends::DataMapper::UserAccess'
 
         def token
           OAuthProvider::Token.new(shared_key, secret_key)
