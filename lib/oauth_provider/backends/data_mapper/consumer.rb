@@ -4,6 +4,9 @@ module OAuthProvider
       class Consumer
         include ::DataMapper::Resource
 
+        # easiest way to get it to setup in the right repo.
+        decorate :default_repository_name, :ez
+
         property :id, Serial
         property :callback, String, :unique => true, :required => true
         property :shared_key, String, :unique => true, :required => true

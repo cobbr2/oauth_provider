@@ -4,6 +4,9 @@ module OAuthProvider
       class UserAccess
         include ::DataMapper::Resource
 
+        # easiest way to get it to setup in the right repo.
+        decorate :default_repository_name, :ez
+
         property :id, Serial
         property :consumer_id, Integer, :required => true
         property :request_shared_key, String, :required => true
