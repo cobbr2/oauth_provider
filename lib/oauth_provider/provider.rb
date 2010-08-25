@@ -51,12 +51,15 @@ module OAuthProvider
         case type
         when :request
           result = consumer.find_user_request(shared_key)
+          $LOG.debug { "signing :request with request and consumer #{result.secret_key} #{consumer.secret_key}" }
           [result.secret_key, consumer.secret_key]
         when :access
           result = consumer.find_user_access(shared_key)
+          $LOG.debug { "signing :access with access and consumer #{result.secret_key} #{consumer.secret_key}" }
           [result.secret_key, consumer.secret_key]
         when :consumer
           result = consumer
+          $LOG.debug { "signing :consumer with nil and consumer #{consumer.secret_key}" }
           [nil, consumer.secret_key]
         else
           raise ArgumentError, "Type should be one of :request, :access or :consumer"
