@@ -8,7 +8,7 @@ module OAuthProvider
         decorate :default_repository_name, :ez
 
         property :id, Serial
-        property :callback, String, :unique => true, :required => true
+        property :callback, String, :unique => true, :required => true, :length => 2**8 - 1
         property :shared_key, String, :unique => true, :required => true
         property :secret_key, String, :unique => true, :required => true
 
