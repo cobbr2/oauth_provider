@@ -30,7 +30,7 @@ module OAuthProvider
     end
 
     def query_string
-      @token.query_string
+      @token.query_string + "&oauth_callback_verified=true"
     end
 
     def shared_key

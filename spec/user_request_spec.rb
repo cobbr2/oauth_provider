@@ -7,6 +7,20 @@ describe "A User Request" do
     consumer.find_user_request(user_request.shared_key).should be_authorized
   end
 
+  it "has its own callback" do
+    provider = create_provider
+    consumer = provider.add_consumer("http://oauth-provider.example.com")
+    user_request = consumer.issue_request(consumer.callback + "/abcdef")
+    consumer.find_user_request(user_request.shared_key).callback.should == consumer.callback + "/abcdef"
+  end
+
+  it "says it verified the callback" do
+    provider = create_provider
+    consumer = provider.add_consumer("http://oauth-provider.example.com")
+    user_request = consumer.issue_request(consumer.callback + "/abcdef")
+    consumer.find_user_request(user_request.shared_key).query_string.should =~ /[&?]oauth_callback_verified=true/
+  end
+
   describe "which has been authorized" do
     it "can be upgraded" do
       provider = create_provider
