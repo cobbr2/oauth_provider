@@ -20,8 +20,36 @@ module OAuthProvider
         raise(UserAccessNotFound.new(shared_key))
     end
 
-    def issue_request(authorized = false, token = nil)
-      @backend.add_user_request(self, authorized, token || Token.generate)
+    # Raises InvalidCallbackUrl if no callback
+    # is provided, it can't be parsed, or it's
+    # not an HTTP URL (i.e., something we can
+    # really expect to use in a Location: header.)
+    def validate_callback(callback)
+        raise(InvalidCallbackUrl.new(self,callback)) unless callback
+        if callback == 'oob'
+            $LOG.warn("Oauth consumer #{self.token.shared_key} claiming use of 'oob' for request token, will probably fail @ access token retrieval")  if $LOG
+            return true 
+        end
+        begin
+
+            uri = URI::parse(callback)
+            return true if ["http","https"].include?(uri.scheme)
+
+            $LOG.debug { "#{callback} invalid since unsupported scheme" } if $LOG
+            raise InvalidCallbackUrl.new(self,callback)
+
+        rescue URI::InvalidURIError => e
+            $LOG.debug { "#{callback} invalid for #{e.message}" } if $LOG
+            raise  InvalidCallbackUrl.new(self,callback)
+            return false;
+        end
+    end
+
+    # Callback is *required* by RFC5849 when getting
+    # a request token See http://tools.ietf.org/html/rfc5849#section-2.1
+    def issue_request(callback = nil, authorized = false, token = nil)
+      validate_callback(callback);
+      @backend.add_user_request(self, callback, authorized, token || Token.generate)
     end
 
     def shared_key

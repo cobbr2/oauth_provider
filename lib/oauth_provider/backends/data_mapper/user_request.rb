@@ -8,10 +8,11 @@ module OAuthProvider
         decorate :default_repository_name, :ez
 
         property :id, Serial
-        property :consumer_id, Integer, :required => true
-        property :authorized, Boolean, :default => false, :required => true
-        property :shared_key, String, :unique => true, :required => true
-        property :secret_key, String, :unique => true, :required => true
+        property :consumer_id,  Integer,  :required => true
+        property :authorized,   Boolean,  :default => false, :required => true
+        property :shared_key,   String,   :unique => true, :required => true
+        property :secret_key,   String,   :unique => true, :required => true
+        property :callback,     String,   :required => true    # Required by OAuth 1.0a, RFC5849
 
         belongs_to :consumer , :model => '::OAuthProvider::Backends::DataMapper::Consumer'
 
@@ -20,7 +21,7 @@ module OAuthProvider
         end
 
         def to_oauth(backend)
-          OAuthProvider::UserRequest.new(backend, consumer.to_oauth(backend), authorized, token)
+          OAuthProvider::UserRequest.new(backend, consumer.to_oauth(backend), callback, authorized, token)
         end
       end
     end

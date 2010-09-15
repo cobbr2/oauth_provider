@@ -51,15 +51,18 @@ class OAuthClient
   end
   attr_reader :consumer
 
-  def request(token = nil)
-    Request.new(@consumer, Time.now.to_i, token).signed_request
+  def request(token = nil, extras = nil)
+    Request.new(@consumer, Time.now.to_i, token, extras).signed_request
   end
 
   class Request
     include OAuth::Helper
 
-    def initialize(consumer, timestamp, token)
-      @consumer, @timestamp, @nonce, @token = consumer, timestamp, generate_key, token
+    # use params to set additional query parameters like
+    # oauth_callback or oauth_verifier (1.0a)
+    def initialize(consumer, timestamp, token, params = nil)
+      @consumer, @timestamp, @nonce, @token, @params = consumer, timestamp, generate_key, token, params
+      @params = {} unless params;
     end
 
     def signed_request
@@ -81,11 +84,12 @@ class OAuthClient
     end
 
     def query_hash
-      h = {"oauth_nonce" => @nonce,
+      h = @params
+      h.merge!({"oauth_nonce" => @nonce,
            "oauth_timestamp" => @timestamp,
            "oauth_signature_method" => "HMAC-SHA1",
            "oauth_consumer_key" => @consumer.key,
-           "oauth_version" => "1.0"}
+           "oauth_version" => "1.0"})
       h["oauth_token"] = @token.shared_key if @token
       h
     end

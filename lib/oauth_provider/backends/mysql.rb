@@ -54,13 +54,13 @@ module OAuthProvider
       end
 
       def create_user_request(token)
-        @db.real_query("INSERT INTO request_tokens (shared_key, secret_key, authorized, consumer_shared_key) " \
-                    "VALUES ('#{token.shared_key}','#{token.secret_key}',#{token.authorized? ? 1 : 0},'#{token.consumer.shared_key}')")
+        @db.real_query("INSERT INTO request_tokens (shared_key, secret_key, callback, authorized, consumer_shared_key) " \
+                    "VALUES ('#{token.shared_key}','#{token.secret_key}', '#{token.callback}', #{token.authorized? ? 1 : 0},'#{token.consumer.shared_key}')")
       end
 
       def find_user_request(shared_key)
-        @db.query("SELECT shared_key, secret_key, authorized, consumer_shared_key FROM request_tokens WHERE shared_key = '#{shared_key}' LIMIT 1").each do |row|
-          return OAuthProvider::UserRequest.new(self, self.find_consumer(row[3]), row[2].to_i!=0, OAuthProvider::Token.new(row[0], row[1]))
+        @db.query("SELECT shared_key, secret_key, callback, authorized, consumer_shared_key FROM request_tokens WHERE shared_key = '#{shared_key}' LIMIT 1").each do |row|
+          return OAuthProvider::UserRequest.new(self, self.find_consumer(row[4]), row[2], row[3].to_i!=0, OAuthProvider::Token.new(row[0], row[1]))
         end
         raise OAuthProvider::UserRequestNotFound.new(shared_key)
         nil

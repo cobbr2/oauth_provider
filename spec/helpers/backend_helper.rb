@@ -1,5 +1,14 @@
 require 'fileutils'
 
+# FIXME: Helps the cloud_crowd backend survive for the moment. Remove when that's separated
+# from the package again.
+class Object
+    def decorate(name, value)
+       # do nothing 
+    end
+end
+
+
 module OAuthBackendHelper
   module InMemory
     def self.create
@@ -17,7 +26,9 @@ module OAuthBackendHelper
 
     def self.setup
       require 'dm-core'
-      ::DataMapper.setup(:default, "sqlite3:///tmp/oauth_provider_test.sqlite3")
+      require 'dm-migrations'
+      #::DataMapper.setup(:default, "sqlite3:///tmp/oauth_provider_test.sqlite3")
+      ::DataMapper.setup(:default, "mysql://localhost/oauth_provider_test")
     end
 
     def self.reset

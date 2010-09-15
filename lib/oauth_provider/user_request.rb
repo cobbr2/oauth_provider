@@ -1,7 +1,8 @@
 module OAuthProvider
   class UserRequest
-    def initialize(backend, consumer, authorized, token)
-      @backend, @consumer, @authorized, @token = backend, consumer, authorized, token
+    def initialize(backend, consumer, callback, authorized, token)
+      @backend, @consumer, @callback, @authorized, @token = backend, consumer, callback, authorized, token
+
     end
     attr_reader :consumer, :token
 
@@ -23,7 +24,9 @@ module OAuthProvider
     end
 
     def callback
-      @consumer.callback
+      $LOG.debug { "Using OAuth 1.0a request-specific callback #{callback}" }   if $LOG
+      $LOG.warn { "FIXME: Should add my own token to this callback! Also verifier!" }   if $LOG
+      return @callback
     end
 
     def query_string

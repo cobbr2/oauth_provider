@@ -28,8 +28,8 @@ module OAuthProvider
         raise NotImplemented, "Implement #destroy_consumer in #{self.class}"
       end
 
-      def add_user_request(consumer, authorized, token)
-        user_request = UserRequest.new(self, consumer, authorized, token)
+      def add_user_request(consumer, callback, authorized, token)
+        user_request = UserRequest.new(self, consumer, callback, authorized, token)
         create_user_request(user_request)
         user_request
       end

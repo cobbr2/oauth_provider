@@ -27,10 +27,19 @@ module OAuthProvider
   end
   class VerficationFailed < Error; end
   class IncompleteToken < Error; end
+  class TooMuchInformation < Error; end
 
   class DuplicateCallback < Error
     def initialize(consumer)
       super("The callback #{consumer.callback.inspect} is already used by another consumer")
+    end
+  end
+
+  # applications using this should return a 400 in this case,
+  # acc'ding to RFC584
+  class InvalidCallbackUrl < Error
+    def initialize(consumer,url)
+        super("Invalid callback URL #{url} in request token request from #{consumer.token.shared_key}")
     end
   end
 

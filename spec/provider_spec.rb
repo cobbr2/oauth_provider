@@ -60,7 +60,8 @@ describe "A Provider" do
     end
 
     it "issues a user request" do
-      user_request = @provider.issue_request(@client.request)
+      client_request = @client.request(nil,{'oauth_callback' => 'oob'})
+      user_request = @provider.issue_request(client_request)
       lambda { @provider.confirm_access(@client.request(user_request)) }.
         should raise_error(OAuthProvider::UserAccessNotFound)
       @consumer.find_user_request(user_request.shared_key).should_not be_nil
@@ -68,7 +69,7 @@ describe "A Provider" do
 
     describe "with a user request" do
       before(:each) do
-        @user_request = @provider.issue_request(@client.request)
+        @user_request = @provider.issue_request(@client.request(nil,{'oauth_callback' => 'oob'}))
       end
 
       it "authorizes the request" do

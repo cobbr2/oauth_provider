@@ -3,7 +3,7 @@ describe "A Consumer" do
     it "saves the request" do
       provider = create_provider
       consumer = provider.add_consumer("http://foo.com")
-      user_request = consumer.issue_request
+      user_request = consumer.issue_request("oob")
       consumer.find_user_request(user_request.shared_key).should == user_request
     end
 
@@ -11,7 +11,7 @@ describe "A Consumer" do
       it "is authorized" do
         provider = create_provider
         consumer = provider.add_consumer("http://foo.com")
-        user_request = consumer.issue_request(true)
+        user_request = consumer.issue_request("oob",true)
         consumer.find_user_request(user_request.shared_key).should be_authorized
       end
     end
@@ -20,7 +20,7 @@ describe "A Consumer" do
       it "is not authorized" do
         provider = create_provider
         consumer = provider.add_consumer("http://foo.com")
-        user_request = consumer.issue_request(false)
+        user_request = consumer.issue_request("oob",false)
         consumer.find_user_request(user_request.shared_key).should_not be_authorized
       end
     end
@@ -29,7 +29,7 @@ describe "A Consumer" do
       it "uses the provided token" do
         provider = create_provider
         consumer = provider.add_consumer("http://foo.com")
-        user_request = consumer.issue_request(false, OAuthProvider::Token.new("shared key", "secret key"))
+        user_request = consumer.issue_request("oob",false, OAuthProvider::Token.new("shared key", "secret key"))
         consumer.find_user_request("shared key").should == user_request
         user_request.secret_key.should == "secret key"
       end
@@ -39,7 +39,7 @@ describe "A Consumer" do
   it "can destroy a user request" do
     provider = create_provider
     consumer = provider.add_consumer("http://foo.com")
-    user_request = consumer.issue_request
+    user_request = consumer.issue_request("oob")
     consumer.find_user_request(user_request.shared_key).should == user_request
     consumer.destroy_user_request(user_request).should be_true
     lambda {consumer.find_user_request(user_request)}.should raise_error(OAuthProvider::UserRequestNotFound)
@@ -48,7 +48,7 @@ describe "A Consumer" do
   it "finds the same user access for a shared key" do
     provider = create_provider
     consumer = provider.add_consumer("http://foo.com")
-    user_request = consumer.issue_request
+    user_request = consumer.issue_request("oob")
     user_request.authorize
     user_access = user_request.upgrade
     consumer.find_user_access(user_access.shared_key).should == user_access
