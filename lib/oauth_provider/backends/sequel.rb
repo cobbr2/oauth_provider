@@ -58,7 +58,7 @@ module OAuthProvider
 
       def create_tables
         @db.execute("CREATE TABLE IF NOT EXISTS consumers (name CHAR(50), shared CHAR(32) PRIMARY KEY, secret CHAR(32), callback CHAR(255))")
-        @db.execute("CREATE TABLE IF NOT EXISTS request_tokens (shared CHAR(16) PRIMARY KEY, secret CHAR(32), authorized INT, consumer_shared CHAR(32))")
+        @db.execute("CREATE TABLE IF NOT EXISTS request_tokens (shared CHAR(16) PRIMARY KEY, secret CHAR(32), callback CHAR(255), authorized INT, verifier CHAR(32), consumer_shared CHAR(32))")
         @db.execute("CREATE TABLE IF NOT EXISTS access_tokens (shared CHAR(16) PRIMARY KEY, secret CHAR(32), request_shared CHAR(32), consumer_shared CHAR(32))")
         unless @db.table_exists?(:consumers)
           @db.create_table :consumers do

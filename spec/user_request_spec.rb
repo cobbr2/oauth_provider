@@ -11,7 +11,7 @@ describe "A User Request" do
     provider = create_provider
     consumer = provider.add_consumer("http://oauth-provider.example.com")
     user_request = consumer.issue_request(consumer.callback + "/abcdef")
-    consumer.find_user_request(user_request.shared_key).callback.should == consumer.callback + "/abcdef"
+    consumer.find_user_request(user_request.shared_key).callback.index(consumer.callback + "/abcdef").should == 0
   end
 
   it "says it verified the callback" do
@@ -27,7 +27,8 @@ describe "A User Request" do
       consumer = provider.add_consumer("foo")
       user_request = consumer.issue_request("oob")
       user_request.authorize
-      user_access = user_request.upgrade
+      upgrade_request = { 'parameters' => { 'oauth_verifier' => user_request.verifier }}
+      user_access = user_request.upgrade(upgrade_request)
       consumer.find_user_access(user_access.shared_key).should == user_access
     end
 
@@ -35,7 +36,8 @@ describe "A User Request" do
       provider = create_provider
       consumer = provider.add_consumer("foo")
       user_request = consumer.issue_request("oob",true)
-      user_access = user_request.upgrade(OAuthProvider::Token.new("shared key", "secret key"))
+      upgrade_request = { 'parameters' => { 'oauth_verifier' => user_request.verifier }}
+      user_access = user_request.upgrade(upgrade_request, OAuthProvider::Token.new("shared key", "secret key"))
       user_access.shared_key.should == "shared key"
       user_access.secret_key.should == "secret key"
     end
@@ -46,7 +48,8 @@ describe "A User Request" do
       provider = create_provider
       consumer = provider.add_consumer("foo")
       user_request = consumer.issue_request("oob")
-      lambda { user_request.upgrade }.
+      upgrade_request = { 'parameters' => { 'oauth_verifier' => user_request.verifier }}
+      lambda { user_request.upgrade(upgrade_request) }.
         should raise_error(OAuthProvider::UserRequestNotAuthorized)
     end
   end
@@ -57,7 +60,8 @@ describe "A User Request" do
       consumer = provider.add_consumer("foo")
       user_request = consumer.issue_request("oob")
       user_request.authorize
-      user_request.upgrade
+      upgrade_request = { 'parameters' => { 'oauth_verifier' => user_request.verifier }}
+      user_request.upgrade(upgrade_request)
 
       lambda { consumer.find_user_request(user_request.shared_key) }.
         should raise_error(OAuthProvider::UserRequestNotFound)

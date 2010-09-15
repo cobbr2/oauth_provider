@@ -42,7 +42,8 @@ module OAuthProvider
             consumer.user_requests.create(:shared_key => user_request.shared_key,
                                           :secret_key => user_request.secret_key,
                                           :callback   => user_request.callback,
-                                          :authorized => user_request.authorized?)
+                                          :authorized => user_request.authorized?,
+                                          :verifier   => user_request.verifier)
           end
         end
       end

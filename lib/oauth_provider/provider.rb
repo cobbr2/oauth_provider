@@ -14,7 +14,7 @@ module OAuthProvider
     end
 
     def upgrade_request(request)
-      verify(request, :request).upgrade
+      verify(request, :request).upgrade(request)
     end
 
     def confirm_access(request)

@@ -50,7 +50,7 @@ describe "A Consumer" do
     consumer = provider.add_consumer("http://foo.com")
     user_request = consumer.issue_request("oob")
     user_request.authorize
-    user_access = user_request.upgrade
+    user_access = user_request.upgrade({ 'parameters' => { 'oauth_verifier' => user_request.verifier }})
     consumer.find_user_access(user_access.shared_key).should == user_access
   end
 

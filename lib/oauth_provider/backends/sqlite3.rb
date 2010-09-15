@@ -52,7 +52,7 @@ module OAuthProvider
       end
 
       def save_user_request(user_request)
-        @db.execute("UPDATE request_tokens SET authorized=#{user_request.authorized? ? '1' : '0'} WHERE shared_key='#{user_request.shared_key}' AND secret_key='#{user_request.secret_key}'")
+        @db.execute("UPDATE request_tokens SET authorized=#{user_request.authorized? ? '1' : '0'}, verifier=#{user_request.verifier ? "'#{user_request.verifier}'" : "NULL"}  WHERE shared_key='#{user_request.shared_key}' AND secret_key='#{user_request.secret_key}'")
       end
 
       def destroy_user_request(user_request)

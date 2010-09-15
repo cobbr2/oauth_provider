@@ -80,10 +80,22 @@ describe "A Provider" do
       describe "which has been authorized" do
         before(:each) do
           @user_request.authorize
+          @verifier =  { 'oauth_verifier' => @user_request.verifier }
         end
 
-        it "upgrades the request" do
+        it "cannot be upgraded without a verifier" do
           request = @client.request(@user_request)
+          lambda { @provider.upgrade_request(request) }.should raise_error
+        end
+
+        it "cannot be upgraded with mismatching verifier" do
+          request = @client.request(@user_request,{'oauth_verifier' => 'b3nt0'})
+          lambda { @provider.upgrade_request(request) }.should raise_error
+        end
+
+
+        it "upgrades the request" do
+          request = @client.request(@user_request,@verifier)
           user_access = @provider.upgrade_request(request)
           lambda { @provider.confirm_access(@client.request(user_access)) }.
             should_not raise_error
@@ -91,7 +103,7 @@ describe "A Provider" do
 
         describe "converted to user access" do
           before(:each) do
-            request = @client.request(@user_request)
+            request = @client.request(@user_request,@verifier)
             @access_token = @provider.upgrade_request(request)
           end
 

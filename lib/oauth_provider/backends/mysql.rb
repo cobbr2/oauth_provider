@@ -14,7 +14,7 @@ module OAuthProvider
         @db.real_query("SET NAMES 'UTF8'")
         # FIXME: The key column widths are perhaps not right. What is the max width of each?
         @db.real_query("CREATE TABLE IF NOT EXISTS consumers (name CHAR(50), shared_key CHAR(43) PRIMARY KEY, secret_key CHAR(43), callback CHAR(255))")
-        @db.real_query("CREATE TABLE IF NOT EXISTS request_tokens (shared_key CHAR(22) PRIMARY KEY, secret_key CHAR(43), authorized INT, consumer_shared_key CHAR(43))")
+        @db.real_query("CREATE TABLE IF NOT EXISTS request_tokens (shared_key CHAR(22) PRIMARY KEY, secret_key CHAR(43), callback CHAR(255), authorized INT, verifier CHAR(43), consumer_shared_key CHAR(43))")
         @db.real_query("CREATE TABLE IF NOT EXISTS access_tokens (shared_key CHAR(22) PRIMARY KEY, secret_key CHAR(43), request_shared_key CHAR(43), consumer_shared_key CHAR(43))")
       end
 
@@ -54,20 +54,20 @@ module OAuthProvider
       end
 
       def create_user_request(token)
-        @db.real_query("INSERT INTO request_tokens (shared_key, secret_key, callback, authorized, consumer_shared_key) " \
-                    "VALUES ('#{token.shared_key}','#{token.secret_key}', '#{token.callback}', #{token.authorized? ? 1 : 0},'#{token.consumer.shared_key}')")
+        @db.real_query("INSERT INTO request_tokens (shared_key, secret_key, callback, authorized, verifier, consumer_shared_key) " \
+                    "VALUES ('#{token.shared_key}','#{token.secret_key}', '#{token.callback}', #{token.authorized? ? 1 : 0}, '#{token.verifier}', '#{token.consumer.shared_key}')")
       end
 
       def find_user_request(shared_key)
-        @db.query("SELECT shared_key, secret_key, callback, authorized, consumer_shared_key FROM request_tokens WHERE shared_key = '#{shared_key}' LIMIT 1").each do |row|
-          return OAuthProvider::UserRequest.new(self, self.find_consumer(row[4]), row[2], row[3].to_i!=0, OAuthProvider::Token.new(row[0], row[1]))
+        @db.query("SELECT shared_key, secret_key, callback, authorized, verifier, consumer_shared_key FROM request_tokens WHERE shared_key = '#{shared_key}' LIMIT 1").each do |row|
+          return OAuthProvider::UserRequest.new(self, self.find_consumer(row[5]), row[2], row[3].to_i!=0, row[4], OAuthProvider::Token.new(row[0], row[1]))
         end
         raise OAuthProvider::UserRequestNotFound.new(shared_key)
         nil
       end
 
       def save_user_request(user_request)
-        @db.real_query("UPDATE request_tokens SET authorized=#{user_request.authorized? ? '1' : '0'} WHERE shared_key='#{user_request.shared_key}' AND secret_key='#{user_request.secret_key}'")
+        @db.real_query("UPDATE request_tokens SET authorized=#{user_request.authorized? ? '1' : '0'}, verifier=#{user_request.verifier ? "'#{user_request.verifier}'" : "NULL"} WHERE shared_key='#{user_request.shared_key}' AND secret_key='#{user_request.secret_key}'")
       end
 
       def destroy_user_request(user_request)

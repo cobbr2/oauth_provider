@@ -13,6 +13,10 @@ module OAuthProviderHelper
   def create_provider
     OAuthBackendHelper.provider
   end
+
+  def upgrade_request(user_request)
+
+  end
 end
 
 Spec::Runner.configure do |config|

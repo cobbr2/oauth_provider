@@ -20,9 +20,15 @@ module OAuthProvider
       super("No User Access with shared key: #{shared_key.inspect}")
     end
   end
-  class UserRequestNotAuthorized < Error
+  class UserRequestNotAuthorized < Error ; end
+  class UserRequestNotYetAuthorized < UserRequestNotAuthorized
     def initialize(user_request)
       super("The User Request is not yet authorized by the User: #{user_request.shared_key.inspect}")
+    end
+  end
+  class UserRequestVerifierMismatch < UserRequestNotAuthorized
+    def initialize(user_request,verifier)
+      super("Verifier #{verifier} doesn't match that in User Request: #{user_request.shared_key.inspect}")
     end
   end
   class VerficationFailed < Error; end

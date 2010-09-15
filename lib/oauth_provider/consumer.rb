@@ -48,8 +48,9 @@ module OAuthProvider
     # Callback is *required* by RFC5849 when getting
     # a request token See http://tools.ietf.org/html/rfc5849#section-2.1
     def issue_request(callback = nil, authorized = false, token = nil)
-      validate_callback(callback);
-      @backend.add_user_request(self, callback, authorized, token || Token.generate)
+      validate_callback(callback)
+      verifier = nil
+      @backend.add_user_request(self, callback, authorized, verifier, token || Token.generate)
     end
 
     def shared_key

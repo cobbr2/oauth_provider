@@ -4,7 +4,7 @@ describe "A User Access" do
     consumer = provider.add_consumer("foo")
     user_request = consumer.issue_request("oob")
     user_request.authorize
-    user_access = user_request.upgrade
+    user_access = user_request.upgrade({ 'parameters' => { 'oauth_verifier' => user_request.verifier }})
     user_access.request_shared_key.should == user_request.shared_key
   end
 end
