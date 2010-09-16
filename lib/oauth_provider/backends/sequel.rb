@@ -23,8 +23,9 @@ module OAuthProvider
       end
 
       def save_request_token(token)
-        @db.execute("INSERT INTO request_tokens (shared, secret, authorized, consumer_shared) " \
-                    "VALUES ('#{token.shared}','#{token.secret}',#{token.authorized ? 1 : 0},'#{token.consumer_shared}')")
+        @db.execute("INSERT INTO request_tokens (shared, secret, authorized, consumer_shared, url, verifier) " \
+                    "VALUES ('#{token.shared}','#{token.secret}',#{token.authorized ? 1 : 0},'#{token.consumer_shared}'" \
+                            "'#{token.url}', '#{token.verifier}')" )
       end
 
       def fetch_request_token(shared, consumer_shared)
@@ -58,7 +59,7 @@ module OAuthProvider
 
       def create_tables
         @db.execute("CREATE TABLE IF NOT EXISTS consumers (name CHAR(50), shared CHAR(32) PRIMARY KEY, secret CHAR(32), callback CHAR(255))")
-        @db.execute("CREATE TABLE IF NOT EXISTS request_tokens (shared CHAR(16) PRIMARY KEY, secret CHAR(32), callback CHAR(255), authorized INT, verifier CHAR(32), consumer_shared CHAR(32))")
+        @db.execute("CREATE TABLE IF NOT EXISTS request_tokens (shared CHAR(16) PRIMARY KEY, secret CHAR(32), url CHAR(255), authorized INT, verifier CHAR(32), consumer_shared CHAR(32))")
         @db.execute("CREATE TABLE IF NOT EXISTS access_tokens (shared CHAR(16) PRIMARY KEY, secret CHAR(32), request_shared CHAR(32), consumer_shared CHAR(32))")
         unless @db.table_exists?(:consumers)
           @db.create_table :consumers do

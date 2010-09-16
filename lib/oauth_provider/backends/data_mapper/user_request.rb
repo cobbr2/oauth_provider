@@ -9,10 +9,11 @@ module OAuthProvider
 
         property :id, Serial
         property :consumer_id,  Integer,  :required => true
-        property :authorized,   Boolean,  :default => false, :required => true
-        property :shared_key,   String,   :unique => true, :required => true
-        property :secret_key,   String,   :unique => true, :required => true
-        property :callback,     String,   :required => true    # Required by OAuth 1.0a, RFC5849
+        property :authorized,   Boolean,  :required => true, :default => false
+        property :shared_key,   String,   :required => true, :unique => true 
+        property :secret_key,   String,   :required => true, :unique => true
+        property :url,          String,   :required => true, :default => 'oob', :length => 2**8 - 1
+        property :verifier,     String,   :required => false
 
         belongs_to :consumer , :model => '::OAuthProvider::Backends::DataMapper::Consumer'
 
@@ -21,7 +22,7 @@ module OAuthProvider
         end
 
         def to_oauth(backend)
-          OAuthProvider::UserRequest.new(backend, consumer.to_oauth(backend), callback, authorized, token)
+          OAuthProvider::UserRequest.new(backend, consumer.to_oauth(backend), url, authorized, verifier, token)
         end
       end
     end

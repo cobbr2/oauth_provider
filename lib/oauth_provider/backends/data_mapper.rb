@@ -39,11 +39,12 @@ module OAuthProvider
       def create_user_request(user_request)
         with_repository do
           if consumer = consumer_for(user_request.consumer.shared_key)
-            consumer.user_requests.create(:shared_key => user_request.shared_key,
-                                          :secret_key => user_request.secret_key,
-                                          :callback   => user_request.callback,
-                                          :authorized => user_request.authorized?,
-                                          :verifier   => user_request.verifier)
+            r = consumer.user_requests.create(:shared_key => user_request.shared_key,
+                                              :secret_key => user_request.secret_key,
+                                              :url        => user_request.url,
+                                              :authorized => user_request.authorized?,
+                                              :verifier   => user_request.verifier)
+            r.clean? || raise("Failed to save new user request: #{r.errors.to_hash.inspect}")
           end
         end
       end
@@ -56,6 +57,7 @@ module OAuthProvider
       def save_user_request(user_request)
         if model = user_request_for(user_request.shared_key)
           model.authorized = user_request.authorized?
+          model.verifier = user_request.verifier
           model.save || raise("Failed to save UserRequest: #{user_request.shared_key}, #{model.errors.inspect}")
         end
       end

@@ -10,7 +10,7 @@ describe "A User Request" do
   it "has its own callback" do
     provider = create_provider
     consumer = provider.add_consumer("http://oauth-provider.example.com")
-    user_request = consumer.issue_request(consumer.callback + "/abcdef")
+    user_request = consumer.issue_request(consumer.callback + "/abcdef/ghijklmnopqrstuvwxyz/0123456")
     consumer.find_user_request(user_request.shared_key).callback.index(consumer.callback + "/abcdef").should == 0
   end
 
@@ -40,6 +40,33 @@ describe "A User Request" do
       user_access = user_request.upgrade(upgrade_request, OAuthProvider::Token.new("shared key", "secret key"))
       user_access.shared_key.should == "shared key"
       user_access.secret_key.should == "secret key"
+    end
+
+    it "provides a verifier with its callback" do
+      provider = create_provider
+      consumer = provider.add_consumer("http://my.example.com/callback")
+      user_request = consumer.issue_request("http://my.example.com/callback/nob")
+      user_request.authorize
+      user_request.callback.should =~ /oauth_verifier=[^&]+/
+    end
+
+    it "provides its own key as oauth_token on its callback" do
+      provider = create_provider
+      consumer = provider.add_consumer("http://my.example.com/callback")
+      user_request = consumer.issue_request("http://my.example.com/callback/nob")
+      user_request.authorize
+      user_request.callback.should =~ /oauth_token=([^&]+)/
+      match = user_request.callback.match(/oauth_token=([^&]+)/)[1]
+      match.should == user_request.token.shared_key
+    end
+
+    it "saves its verifier for later comparison" do
+      provider = create_provider
+      consumer = provider.add_consumer("http://my.example.com/callback")
+      user_request = consumer.issue_request("http://my.example.com/callback/nob")
+      user_request.authorize
+      saved_request = consumer.find_user_request(user_request.token.shared_key)
+      saved_request.verifier.should == user_request.verifier
     end
   end
 
