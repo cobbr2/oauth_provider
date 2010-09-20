@@ -1,9 +1,9 @@
 module OAuthProvider
   class UserAccess
-    def initialize(backend, consumer, request_shared_key, token)
-      @backend, @consumer, @request_shared_key, @token = backend, consumer, request_shared_key, token
+    def initialize(backend, consumer, request_shared_key, token, app_params = nil)
+      @backend, @consumer, @request_shared_key, @token, @app_params = backend, consumer, request_shared_key, token, app_params
     end
-    attr_reader :consumer, :request_shared_key, :token
+    attr_reader :consumer, :request_shared_key, :token, :app_params
 
     def query_string
       @token.query_string

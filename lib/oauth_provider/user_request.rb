@@ -3,7 +3,7 @@ module OAuthProvider
     def initialize(backend, consumer, url, authorized, verifier, token)
       @backend, @consumer, @url, @authorized, @verifier, @token = backend, consumer, url, authorized, verifier, token
     end
-    attr_reader :consumer, :token, :verifier, :url
+    attr_reader :consumer, :token, :verifier, :url, :app_params
 
     def authorized?
       @authorized
@@ -17,7 +17,9 @@ module OAuthProvider
       return OAuth::Helper.generate_key(4)
     end
 
-    def authorize
+    # App params are available to the backend for mapping to customer
+    def authorize(app_params = {})
+      @app_params = app_params
       @verifier   = generate_verifier
       @authorized = true
       @backend.save_user_request(self)
