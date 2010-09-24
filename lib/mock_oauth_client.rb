@@ -1,34 +1,3 @@
-require 'rubygems'
-require 'spec'
-require 'rack'
-require 'pp'
-# Allows for testing in an environment with closely
-# controlled versions of gems
-require File.dirname(__FILE__) + '/helpers/vendors'
-require 'oauth/helper'
-
-require File.dirname(__FILE__) + '/../lib/oauth_provider'
-require File.dirname(__FILE__) + '/helpers/backend_helper'
-
-OAuthBackendHelper.setup
-
-module OAuthProviderHelper
-  def create_provider
-    OAuthBackendHelper.provider
-  end
-
-  def upgrade_request(user_request)
-
-  end
-end
-
-Spec::Runner.configure do |config|
-  config.include(OAuthProviderHelper)
-
-  config.before(:each) do
-    OAuthBackendHelper.reset
-  end
-end
 
 require 'oauth/request_proxy/base'
 
