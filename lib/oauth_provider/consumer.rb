@@ -1,9 +1,10 @@
 module OAuthProvider
   class Consumer
-    def initialize(backend, provider, callback, token)
-      @backend, @provider, @callback, @token = backend, provider, callback, token
+    def initialize(backend, provider, callback, token, extensions = nil)
+      @backend, @provider, @callback, @token, @extensions = backend, provider, callback, token, extensions
     end
-    attr_reader :provider, :callback, :token
+    attr_reader   :provider, :callback, :token
+    attr_accessor :extensions  # By convention, backends write and clients read, at least for now.
 
     def find_user_request(shared_key)
       @backend.find_user_request(shared_key) ||

@@ -23,6 +23,7 @@ module OAuthProvider
                                :shared_key => consumer.shared_key,
                                :secret_key => consumer.secret_key)
           model.save || raise("Failed to create Consumer: #{model.inspect}, #{model.errors.inspect}")
+          consumer.extensions = { :model => model }
         end
       end
 
