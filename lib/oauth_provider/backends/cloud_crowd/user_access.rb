@@ -6,12 +6,17 @@ module OAuthProvider
 
         # easiest way to get it to setup in the right repo.
         decorate :default_repository_name, :ez
+        storage_names[:ez] = "ez_apps_user_accesses"
 
-        property :id, Serial
-        property :consumer_id, Integer, :required => true
-        property :request_shared_key, String, :required => true
-        property :shared_key, String, :unique => true, :required => true
-        property :secret_key, String, :unique => true, :required => true
+        property :id,                   Serial
+        property :consumer_id,          Integer, :required => true, :index => true
+        property :request_shared_key,   String,  :required => true
+        property :shared_key,           String,  :required => true, :unique => true 
+        property :secret_key,           String,  :required => true
+
+        # Cloudcrowd almost always wants these as a forensic tool.
+        property :created_at,   DateTime
+        property :updated_at,   DateTime
 
         belongs_to :consumer , :model => '::OAuthProvider::Backends::CloudCrowd::Consumer'
         belongs_to :customer , :model => '::Ez::Customer'

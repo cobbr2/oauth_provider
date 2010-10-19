@@ -6,12 +6,19 @@ module OAuthProvider
 
         # easiest way to get it to setup in the right repo.
         decorate :default_repository_name, :ez
+        storage_names[:ez] = "ez_applications"
 
+        # One of :app_name or :callback shouldn't be required to be unique any more.
+        # OTOH, at the moment app_name's not populated, and callback is unique.
         property :id,           Serial
         property :callback,     String, :unique => true, :required => true, :length => 2**8 - 1
         property :shared_key,   String, :unique => true, :required => true
-        property :secret_key,   String, :unique => true, :required => true
+        property :secret_key,   String, :required => true
         property :app_name,     String, :unique => true, :length => 2**8 - 1
+
+        # Cloudcrowd almost always wants these as a forensic tool.
+        property :created_at,   DateTime
+        property :updated_at,   DateTime
 
         has n, :user_requests, :model => '::OAuthProvider::Backends::CloudCrowd::UserRequest'
         has n, :user_accesses, :model => '::OAuthProvider::Backends::CloudCrowd::UserAccess'
