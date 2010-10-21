@@ -15,6 +15,10 @@ module OAuthProvider
         property :shared_key,   String, :unique => true, :required => true
         property :secret_key,   String, :required => true
         property :app_name,     String, :unique => true, :length => 2**8 - 1
+        property :environment,  Enum[
+            :sandbox,           # 1 - The key pair is intended for use in the sandbox ('dev' or 'test' Rake configuration)
+            :production,        # 2 - The key pair is intended for use in production
+            ],                          :required => true, :default => :sandbox
 
         # Cloudcrowd almost always wants these as a forensic tool.
         property :created_at,   DateTime
