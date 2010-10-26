@@ -121,6 +121,11 @@ module OAuthProvider
   end
 end
 
-require 'consumer.rb'
-require 'user_request.rb'
-require 'user_access.rb'
+# Need to include the backends if this is run from the 
+# specs in the oauth_provider gem. Otherwise count on
+# CloudCrowd build environment to include them appropriately.
+if Object.const_defined?(:OAuthBackendHelper)
+    require 'consumer.rb'
+    require 'user_request.rb'
+    require 'user_access.rb'
+end
