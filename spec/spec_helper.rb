@@ -17,6 +17,13 @@ module OAuthProviderHelper
     OAuthBackendHelper.provider
   end
 
+  def user_info
+    if user = OAuthBackendHelper.user 
+        user = { :customer => user }
+    end
+    return user
+  end
+
   def upgrade_request(user_request)
 
   end

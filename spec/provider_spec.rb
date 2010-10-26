@@ -73,13 +73,13 @@ describe "A Provider" do
       end
 
       it "authorizes the request" do
-        @user_request.authorize
+        @user_request.authorize(user_info)
         @user_request.should be_authorized
       end
 
       describe "which has been authorized" do
         before(:each) do
-          @user_request.authorize
+          @user_request.authorize(user_info)
           @verifier =  { 'oauth_verifier' => @user_request.verifier }
         end
 

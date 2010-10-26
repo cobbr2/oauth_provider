@@ -26,7 +26,7 @@ describe "A User Request" do
       provider = create_provider
       consumer = provider.add_consumer("foo")
       user_request = consumer.issue_request("oob")
-      user_request.authorize
+      user_request.authorize(user_info)
       upgrade_request = { 'parameters' => { 'oauth_verifier' => user_request.verifier }}
       user_access = user_request.upgrade(upgrade_request)
       consumer.find_user_access(user_access.shared_key).should == user_access
