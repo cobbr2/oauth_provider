@@ -1,13 +1,5 @@
 require 'fileutils'
 
-# FIXME: Helps the cloud_crowd backend survive for the moment. Remove when that's separated
-# from the package again.
-class Object
-    def decorate(name, value)
-       # do nothing 
-    end
-end
-
 
 module OAuthBackendHelper
   module InMemory
@@ -42,14 +34,19 @@ module OAuthBackendHelper
   # Not clear how to get those tricks implemented
   # yet, but this is a prerequisite anyway.
   module CloudCrowd
+
+    $LOAD_PATH.unshift("#{ENV['CCROOT']}/common/models/ez")
+
     def self.create
       OAuthProvider.create(:cloud_crowd)
     end
 
     def self.setup
+
       require 'dm-core'
       require 'dm-migrations'
       require 'dm-types'
+
       #::DataMapper.setup(:default, "sqlite3:///tmp/oauth_provider_test.sqlite3")
       # Fails because the rest of our ez models aren't there. Once you tie 
       # to ez_customer, life gets hard. Guess we'd need a customer-helper...

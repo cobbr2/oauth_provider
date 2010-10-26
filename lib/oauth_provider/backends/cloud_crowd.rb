@@ -121,6 +121,6 @@ module OAuthProvider
   end
 end
 
-require 'oauth_provider/backends/cloud_crowd/consumer'
-require 'oauth_provider/backends/cloud_crowd/user_request'
-require 'oauth_provider/backends/cloud_crowd/user_access'
+require 'consumer.rb'
+require 'user_request.rb'
+require 'user_access.rb'
