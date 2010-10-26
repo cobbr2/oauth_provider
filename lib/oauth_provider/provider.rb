@@ -21,6 +21,14 @@ module OAuthProvider
       verify(request, :access)
     end
 
+    # Used for '2-legged' requests. Be careful with these;
+    # you usually need to check more data about the consumer
+    # before you authorize work.
+    def confirm_consumer(request)
+        consumer = verify(request,:consumer)
+        return consumer
+    end
+
     # Consumer
 
     def consumers
