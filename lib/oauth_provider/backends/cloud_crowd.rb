@@ -6,11 +6,14 @@ module OAuthProvider
     class CloudCrowd < Abstract
       def initialize(repository = :default)
         @repository = repository
+        environment = $CONFIG[:oauth_environment] || :sandbox
+        # Hmm. This is becoming part of the key, it seems.
+        @list_filter = { :environment => environment.to_sym }
       end
 
       def consumers
         with_repository do
-          Consumer.all.map do |c|
+          Consumer.all(@list_filter).map do |c|
             c.to_oauth(self)
           end
         end
